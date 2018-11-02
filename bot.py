@@ -1,6 +1,8 @@
 import time
 from config import keys
 from selenium import webdriver
+from selenium.webdriver.support import expected_conditions as EC
+
 
 #timing of the execution
 def timeme(method):
@@ -12,12 +14,21 @@ def timeme(method):
         return result
     return wrapper
 @timeme
+
+def start (k):
+    #opens supreme
+    driver.get(k["product_url"]) 
+    open()
+
+def open ():
+    #click on item
+    driver.find_element_by_class_name("inner-article").click()
+    print ("Nice")
+    time.sleep(1)
+    order(keys)
  
 
 def order (k):  
-    #opens supreme
-    driver.get(k["product_url"]) 
-
     #click buttons on item page
     driver.find_element_by_xpath('//*[@id="add-remove-buttons"]/input').click() 
     time.sleep(0.5)
@@ -45,5 +56,4 @@ def order (k):
 if __name__ == '__main__':
     #launch chrome driver 
     driver = webdriver.Chrome('./chromedriver')
-    order(keys)
-    
+    start(keys)
