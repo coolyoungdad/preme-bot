@@ -1,8 +1,10 @@
 import time
 from config import keys
 from selenium import webdriver
-from selenium.webdriver.support import expected_conditions as EC
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
+from selenium.webdriver.support import expected_conditions as EC # available since 2.26.0
+import threading
 
 #timing of the execution
 def timeme(method):
@@ -17,15 +19,20 @@ def timeme(method):
 
 def start (k):
     #opens supreme
+    driver.implicitly_wait(10) # seconds
     driver.get(k["product_url"]) 
-    open()
+    checkProductPage()
 
-def open ():
-    #click on item
-    driver.find_element_by_class_name("inner-article").click()
-    print ("Nice")
-    time.sleep(1)
-    order(keys)
+def setInterval(func, time):
+    e = threading.Event()
+    while not e.wait(time):
+            func()
+
+def checkProductPage():
+    try:
+        element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "description")))
+    finally:
+        order(keys)
  
 
 def order (k):  
