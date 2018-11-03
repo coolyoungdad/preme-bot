@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.webdriver.support import expected_conditions as EC # available since 2.26.0
-import threading
+
 
 #timing of the execution
 def timeme(method):
@@ -17,24 +17,34 @@ def timeme(method):
     return wrapper
 @timeme
 
-def start (k):
-    #opens supreme
-    driver.implicitly_wait(10) # seconds
+
+#Script starts
+#open Google and sign-in
+def googleStart (k):
+    driver.get(k["google"])
+    driver.find_element_by_xpath('//*[@id="identifierId"]').send_keys(k["google_id"])
+    driver.find_element_by_xpath('//*[@id="identifierNext"]').click()
+    time.sleep(0.5)
+    driver.find_element_by_xpath('//*[@id="password"]/div[1]/div/div[1]/input').send_keys(k["google_password"])
+    time.sleep(0.5)
+    driver.find_element_by_xpath('//*[@id="passwordNext"]/content/span').click()
+    time.sleep(1)
+    supremeStart(keys)
+
+#opens supreme
+def supremeStart (k):
+    driver.implicitly_wait(10000) # seconds
     driver.get(k["product_url"]) 
     checkProductPage()
 
-def setInterval(func, time):
-    e = threading.Event()
-    while not e.wait(time):
-            func()
-
+#waits for click on the product you want
 def checkProductPage():
     try:
         element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "description")))
     finally:
         order(keys)
  
-
+#starts order
 def order (k):  
     #click buttons on item page
     driver.find_element_by_xpath('//*[@id="add-remove-buttons"]/input').click() 
@@ -49,7 +59,6 @@ def order (k):
     driver.find_element_by_xpath('//*[@id="bo"]').send_keys(k["address"]) 
     driver.find_element_by_xpath('//*[@id="oba3"]').send_keys(k["apt"]) 
     driver.find_element_by_xpath('//*[@id="order_billing_zip"]').send_keys(k["zip"]) 
-    driver.find_element_by_xpath('//*[@id="order_billing_city"]').send_keys(k["city"])
     driver.find_element_by_xpath('//*[@id="order_billing_state"]/option[37]').click()
 
     #add CC info
@@ -57,10 +66,11 @@ def order (k):
     driver.find_element_by_xpath('//*[@id="orcer"]').send_keys(k["card_cvv"])
 
     #click agree to terms
+    driver.find_element_by_xpath('//*[@id="cart-cc"]/fieldset/p[2]/label/div/ins').click()
     process_payment = driver.find_element_by_xpath('//*[@id="pay"]/input')
     process_payment.click()
 
 if __name__ == '__main__':
     #launch chrome driver 
     driver = webdriver.Chrome('./chromedriver')
-    start(keys)
+    googleStart(keys)
